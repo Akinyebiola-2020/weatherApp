@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.css">
+	<title>WEATHER APP API</title>
+</head>
+
+<style type="text/css">
+	body{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin: 50px auto;
+	}
+
+	*{
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+/*	container section*/
+	#container{
+		display: flex;
+		flex-direction: column;
+		padding: 10px;
+		background: linear-gradient(purple, blue, green);
+		width: 290px;
+		border-radius: 8px;
+	}
+
+/*Search section*/
+	#search{
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 5px;
+	}
+
+	#search input{
+		border-radius: 5px;
+		outline: none;
+		height: 30px;
+		width: 200px;
+		padding: 2px;
+	}
+
+	#search button{
+		cursor: pointer;
+		font-size: 17px;
+		padding: 3px;
+	}
+
+/*cloud Section*/
+	.fa-cloud-showers-heavy{
+		font-size: 50px;
+	}
+	.fa-sharp{
+		font-size: 25px;
+	}
+	.tempCity{
+		margin: 10px auto;
+		text-align: center;
+
+	}
+	
+
+	.miniContainer{
+		display: flex;
+		flex-direction: column;
+
+	}
+/*temperatureCloud section*/
+	.tempCityCloudDetails{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin-top: 20px;
+		color: white;
+	}
+
+
+/*temperatureCity section*/
+	#temp,#city{
+		margin-top: 5px;
+		font-size: 20px;
+	}
+
+
+/*humiditySpeed Section*/
+	.humidSpeedDetails{
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.humidity, .speed{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 10px;
+		font-size: 18px;
+		color: white;
+		margin-top: 20px;
+	}
+
+/*	InvalidCity Section*/
+	#invalidCity{
+		text-align: center;
+		color: 	white;
+		font-size: 18px;
+		margin-top: 5px;
+		display: none;
+	}
+</style>
+<body>
+	<div id="container">
+		<div id="search">
+			<input type="text" placeholder="Enter City Name" id="searCityName">
+			<button id="searchCityBtn"><i class = "fa fa-search"></i></button>	
+		</div>
+		<h2 id="invalidCity">Invalid City</h2>
+
+		<div class="miniContainer">
+			<div class="tempCityCloudDetails">
+				<div class="cloudImg">
+					<i class="fa-solid fa-cloud-showers-heavy"></i>
+				</div>
+				
+				<div class="tempCity">
+					<h3 id="temp">20°C</h3>
+				     <p id="city">Bengaluru</p>
+				</div>
+				
+			</div>
+			<div class="humidSpeedDetails">
+				<div class="humidity">
+					<div>
+						<i class="fa-sharp fa-solid fa-water"></i>
+					</div>
+					<div>
+						<h3 id="humidity">31%</h3>
+						<p>Humidity</p>
+					</div>
+					
+				</div>
+				<div class="speed">
+					<div>
+						<i class="fa-sharp fa-solid fa-wind"></i>
+					</div>
+					<div>
+						<h3 id="windSpeed">46.9km/hr</h3>
+						<p>Wind speed</p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+			
+		
+	</div>
+
+
+<script type="text/javascript">
+
+    const btn = document.getElementById("searchCityBtn")
+	const searCityName = document.getElementById("searCityName");
+	const miniContainer = document.querySelector(".miniContainer");
+	const temp = document.getElementById("temp");
+	const cityId = document.getElementById("city");
+	const humidity = document.getElementById("humidity");
+	const windSpeed = document.getElementById("windSpeed");
+	const invalidCity = document.getElementById("invalidCity");
+
+	 const API_KEY = "a28266c32ee1e74231005ff992057cfd";
+	 const API_URL = "https://api.openweathermap.org/data/2.5/weather?&units=metric";
+
+
+	async function detailInfo(city){
+		const response = await fetch(API_URL + `&q=${city}` + `&appid=${API_KEY}`);
+		
+		if(response.status !== 200){
+			invalidCity.style.display = "block"
+			displayErro();
+		}else{
+			 var data = await response.json();
+		 		temp.innerHTML = Math.round(data.main.temp) + "°C";
+		 		cityId.innerHTML=data.name;
+		 		humidity.innerHTML = data.main.humidity + "%";
+		 		windSpeed.innerHTML = data.wind.speed + "km/hr";
+		 		
+		}
+
+	}
+
+  		btn.addEventListener("click", ()=>{
+  			detailInfo(searCityName.value);
+  			searCityName.value=""
+
+  })
+
+
+ 		 function displayErro(){
+  			setTimeout(()=>{
+  			invalidCity.style.display = "none "
+		  }, 5000)
+  	}
+	
+
+	function setItemToLocalStorage() {
+		localStorage.setItem("temp", temp.innerHTML);
+		localStorage.setItem("humidity", humidity.innerHTML);
+		localStorage.setItem("windSpeed", windSpeed.innerHTML);
+		localStorage.setItem("cityId", cityId.innerHTML);
+
+
+	}
+
+
+	function getItemFromLocalStorage(){
+		temp.innerHTML = localStorage.getItem("temp");
+		humidity.innerHTML = localStorage.getItem("humidity");
+		windSpeed.innerHTML = localStorage.getItem("windSpeed");
+		cityId.innerHTML = localStorage.getItem("cityId");
+
+
+	}
+
+	window.onload =getItemFromLocalStorage;
+	window.onbeforeunload = setItemToLocalStorage;
+				
+</script>
+</body>
+</html>
